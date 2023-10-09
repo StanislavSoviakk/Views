@@ -13,7 +13,7 @@ class CustomRectView @JvmOverloads constructor(
 ) : View(context, attrs, defaultStyle) {
 
     private val paint = Paint()
-    private var rectangle: RectF? = null
+    private var rectangle = RectF()
     private val strokeWidth: Float
     private val strokeColor: Int
     private val roundingRadius: Float
@@ -37,20 +37,23 @@ class CustomRectView @JvmOverloads constructor(
     @SuppressLint("DrawAllocation")
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+
         val halfStrokeWidth = strokeWidth / 2
-        rectangle = RectF(
-            10F + halfStrokeWidth,
-            10F + halfStrokeWidth,
-            (measuredWidth - 10.0).toFloat() - halfStrokeWidth,
-            (measuredHeight - 10.0).toFloat() - halfStrokeWidth
+        rectangle.set(
+            halfStrokeWidth,
+            halfStrokeWidth,
+            widthSize - halfStrokeWidth,
+            heightSize - halfStrokeWidth
         )
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        rectangle?.let {
-            canvas?.drawRoundRect(it, roundingRadius, roundingRadius, paint)
-        }
+
+        canvas?.drawRoundRect(rectangle, roundingRadius, roundingRadius, paint)
     }
 
     private fun setPaintSettings() {
