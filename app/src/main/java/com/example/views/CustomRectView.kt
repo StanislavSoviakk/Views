@@ -1,5 +1,6 @@
 package com.example.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -12,7 +13,7 @@ class CustomRectView @JvmOverloads constructor(
 ) : View(context, attrs, defaultStyle) {
 
     private val paint = Paint()
-    private val rectangle = RectF(200F, 100F, 880F, 300F)
+    private var rectangle: RectF? = null
     private val strokeWidth: Float
     private val strokeColor: Int
     private val roundingRadius: Float
@@ -30,17 +31,31 @@ class CustomRectView @JvmOverloads constructor(
             }
 
         }
+        setPaintSettings()
+    }
+
+    @SuppressLint("DrawAllocation")
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val halfStrokeWidth = strokeWidth / 2
+        rectangle = RectF(
+            10F + halfStrokeWidth,
+            10F + halfStrokeWidth,
+            (measuredWidth - 10.0).toFloat() - halfStrokeWidth,
+            (measuredHeight - 10.0).toFloat() - halfStrokeWidth
+        )
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        setPaintSettings()
-        canvas?.drawRoundRect(rectangle, roundingRadius, roundingRadius, paint)
+        rectangle?.let {
+            canvas?.drawRoundRect(it, roundingRadius, roundingRadius, paint)
+        }
     }
 
     private fun setPaintSettings() {
         paint.apply {
-            style = Paint.Style.FILL
+            style = Paint.Style.STROKE
             color = strokeColor
             strokeWidth = strokeWidth
         }
